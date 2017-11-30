@@ -1,0 +1,22 @@
+{
+  "name": "hubot-baseball",
+  "version": "1.0.0",
+  "description": "2 digit bulls and cows game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devnoff/hubot-baseball.git"
+  },
+  "author": "Robinson Park",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/devnoff/hubot-baseball/issues"
+  },
+  "homepage": "https://github.com/devnoff/hubot-baseball#readme",
+  "dependencies": {
+    "memory-cache": "^0.2.0"
+  }
+}
