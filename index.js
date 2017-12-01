@@ -7,7 +7,8 @@ const cache = require('memory-cache')
  * Created by Robinson Park 2017.11.30. 
  */
 var Baseball = function(/* 봇 메세지 객체 */msg, /* 콜백 (msg, text) */send, botName){
-  var baseball = cache.get('baseball')
+  var key = 'baseball' + msg.channel
+  var baseball = cache.get(key)
   var msg = msg
   var text = msg.text
 
@@ -57,7 +58,7 @@ var Baseball = function(/* 봇 메세지 객체 */msg, /* 콜백 (msg, text) */s
           }
         }
 
-        // 숫자 판정
+        // 숫자 분석
         var s = []
         var b = []
         for (var i = 0; i < a.length; i++) {
@@ -78,13 +79,17 @@ var Baseball = function(/* 봇 메세지 객체 */msg, /* 콜백 (msg, text) */s
           return true
         }
 
-        // 결과 전송
+        // 승리 판정
         var m = `제 ${times+1} 회 [${a}] : `
         answers.push(a)
         if (s.length > 2 ) {
           this.reset()
           send(msg, `정답 [${number}] 축하드립니다~ 승리하셨네요! 🎉🎉🎉`) 
-        } else if (s.length < 1 && b.length < 1) {
+          return true
+        } 
+
+        // 숫자 판정
+        if (s.length < 1 && b.length < 1) {
           send(msg, m + 'Out~!')
         } else {
           var r = []
@@ -106,19 +111,20 @@ var Baseball = function(/* 봇 메세지 객체 */msg, /* 콜백 (msg, text) */s
 
   this.saveGame = function(baseball){
     baseball.times++
-    cache.put('baseball', baseball)
+    cache.put(key, baseball)
   }
 
   this.start = function() {
     var answers = []
     var number = generateNumber()
     var times = 0
-    cache.put('baseball', {number, times, answers})
-    send(msg, `${botName}과 함께 하는 수자야구⚾️ 게임~! 자 시작합니다~! 🙉`)
+    cache.put(key, {number, times, answers})
+    send(msg, `${botName}과 함께 하는 숫자야구⚾️ 게임~! 자 시작합니다~! 🙉`)
   }
 
   this.reset = function() {
-    cache.put('baseball', null)
+    cache.put(key, null)
+    cache.del(key)
   }
 
 
