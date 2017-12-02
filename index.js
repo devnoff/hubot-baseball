@@ -80,7 +80,7 @@ var Baseball = function(/* 봇 메세지 객체 */msg, /* 콜백 (msg, text) */s
         }
 
         // 승리 판정
-        var m = `제 ${times+1} 회 [${a}] : `
+        var m = `제 ${times+1} 회 : \`${a}\` - `
         answers.push(a)
         if (s.length > 2 ) {
           this.reset()
@@ -94,10 +94,10 @@ var Baseball = function(/* 봇 메세지 객체 */msg, /* 콜백 (msg, text) */s
         } else {
           var r = []
           if (s.length > 0)
-            r.push(`${s.length}S`)
+            r.push(`\`${s.length}S\``)
 
           if (b.length > 0)
-            r.push(`${b.length}B`)
+            r.push(`\`${b.length}B\``)
 
           send(msg, m + r.join(' '))
         }
