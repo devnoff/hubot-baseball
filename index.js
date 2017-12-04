@@ -234,7 +234,7 @@ var Baseball = function(args){
           // 투구대승률 순위
           result = "##투구수 대비 승률 순위## \n"
           for (var i in data) {
-            result = result.concat(`${i+1}등 <@${data[i].user} 승률: ${parseFloat(data[i].wins) / parseFloat(data[i].times)}> \n`)
+            result = result.concat(`${i+1}등 <@${data[i].user}> 승률: ${parseFloat(data[i].wins) / parseFloat(data[i].times)} \n`)
           }
           
           // 정렬 2
@@ -246,7 +246,7 @@ var Baseball = function(args){
           result = result.concat('\n')
           result = result.concat("##최다승 순위## \n")
           for (var i in copy) {
-            result = result.concat(`${i+1}등 <@${data[i].user} 승리: ${copy[i].wins}> \n`)
+            result = result.concat(`${i+1}등 <@${data[i].user}> 승리: ${copy[i].wins} \n`)
           }
       } else {
         result = "데이터가 없습니다"
