@@ -235,7 +235,7 @@ var Baseball = function(args){
           // 투구대승률 순위
           result = "##시도횟수 대비 승률 순위## \n"
           for (var i in data) {
-            result = result.concat(`${i+1}등 <@${data[i].user}> 승: ${copy[i].wins} / 시도횟수: ${copy[i].wins} / 승률: ${parseFloat(data[i].wins) / parseFloat(data[i].times)} \n`)
+            result = result.concat(`${i+1}등 <@${data[i].user}> 승: ${copy[i].wins} / 시도횟수: ${copy[i].times} / 승률: ${parseFloat(data[i].wins) / parseFloat(data[i].times)} \n`)
           }
           
           // 정렬 2
