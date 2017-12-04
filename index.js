@@ -173,10 +173,11 @@ var Baseball = function(args){
       var index = _.findIndex(data, function(o) { return o.user == user })
 
       var user_data = index > -1 ? data[index] 
-                      : { user: user, times: 0, wins: 0}
+                      : { user: user, times: 0, wins: 0, loses: 0}
 
       user_data.times += times
       user_data.wins += isWin ? 1 : 0
+      user_data.loses += isWin ? 0 : 1
 
       if (index > -1)
         data[index] = user_data
@@ -232,9 +233,9 @@ var Baseball = function(args){
           })
 
           // 투구대승률 순위
-          result = "##투구수 대비 승률 순위## \n"
+          result = "##시도횟수 대비 승률 순위## \n"
           for (var i in data) {
-            result = result.concat(`${i+1}등 <@${data[i].user}> 승률: ${parseFloat(data[i].wins) / parseFloat(data[i].times)} \n`)
+            result = result.concat(`${i+1}등 <@${data[i].user}> 승: ${copy[i].wins} / 시도횟수: ${copy[i].wins} / 승률: ${parseFloat(data[i].wins) / parseFloat(data[i].times)} \n`)
           }
           
           // 정렬 2
@@ -246,7 +247,7 @@ var Baseball = function(args){
           result = result.concat('\n')
           result = result.concat("##최다승 순위## \n")
           for (var i in copy) {
-            result = result.concat(`${i+1}등 <@${data[i].user}> 승리: ${copy[i].wins} \n`)
+            result = result.concat(`${i+1}등 <@${data[i].user}> 승: ${copy[i].wins} / 패: ${copy[i].loses} \n`)
           }
       } else {
         result = "데이터가 없습니다"
