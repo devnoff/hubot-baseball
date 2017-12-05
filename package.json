@@ -1,6 +1,6 @@
 {
   "name": "hubot-baseball-game",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "3 digit bulls and cows game",
   "main": "index.js",
   "scripts": {
