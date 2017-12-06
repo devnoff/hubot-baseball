@@ -27,6 +27,8 @@ var Baseball = function(args){
   this.config = {
     redis_key: 'ranking',
     msg: {
+      'start.cmd': '야구게임 시작',
+      'show.ranking.cmd': '야구게임 순위',
       'on.goin.msg' : '게임이 진행 중입니다',
       'wrong.number' : '잘못된 번호에요. 같은 번호가 반복되었네요',
       'number.exists' : '는 이미 답을 한 번호입니다',
@@ -65,14 +67,14 @@ var Baseball = function(args){
 
   this.check = function() {
 
-    if (text.indexOf('야구게임 랭킹') > -1 || text.indexOf('야구게임 순위') > -1) {
+    if (text.indexOf(msg('show.ranking.cmd')) > -1) {
       getRanking(function(err, rank){
         send(rank)
       });
       return true
     }
     
-    if (text.indexOf('야구게임 시작') > -1) {
+    if (text.indexOf(msg('start.cmd')) > -1) {
       if (baseball) {
         send(msg('on.goin.msg'))
       } else {
