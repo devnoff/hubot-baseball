@@ -92,7 +92,7 @@ var Baseball = function(args){
 
         // 회차 검사
         if (s.length < 3 && times > 7) {
-          this.applyForRank(user, false, times, function(){})
+          this.applyForRank(user, false, (times + 1), function(){})
           this.reset()
           send(`아쉽게도 게임에 지셨네요 ㅠㅠ 답은 ${number} 입니다`) 
           return true
@@ -102,7 +102,7 @@ var Baseball = function(args){
         var m = `제 ${times+1} 회 : \`${a}\` - `
         answers.push(a)
         if (s.length > 2 ) {
-          this.applyForRank(user, true, times, function(){})
+          this.applyForRank(user, true, (times + 1), function(){})
           this.reset()
           send(`정답 [${number}] 축하드립니다~ 승리하셨네요! 🎉🎉🎉`) 
           return true
@@ -290,7 +290,7 @@ var Baseball = function(args){
           result = result.concat('\n')
           result = result.concat("##최소이닝 순위## \n")
           for (var j = 0; j < data.length ; j++) {
-            result = result.concat(`${j+1}등 <@${data[j].user}> 최소이닝: ${parseInt(data[j].min_times) + 1} \n`)
+            result = result.concat(`${j+1}등 <@${data[j].user}> 최소이닝: ${data[j].min_times} \n`)
           }
 
 
