@@ -1,6 +1,53 @@
 const cache = require('memory-cache')
 const _ = require('lodash')
 
+
+const _ordinals = {
+  ko: ['1회','2회','3회','4회','5회','6회,','7회,','8회,','9회'],
+  en: ['1st','2nd','3rd','4th','5th','6th,','7th,','8th,','9th'],
+}
+
+const _i18n = {
+  ko: {
+    'start.cmd': '야구게임 시작',
+    'show.ranking.cmd': '야구게임 순위',
+    'on.goin.msg' : '게임이 진행 중입니다',
+    'wrong.number' : '잘못된 번호에요. 같은 번호가 반복되었네요',
+    'number.exists' : '는 이미 답을 한 번호입니다',
+    'you.lose' : '아쉽게도 게임에 지셨네요 ㅠㅠ 정답 : ',
+    'you.win' : '은 정답입니다. 축하드립니다~ 승리하셨네요! 🎉🎉🎉',
+    'start.msg' : '과 함께 하는 숫자야구⚾️ 게임~! 자 시작합니다~! 🙉',
+    'winning.rate.ranking' : '*승률 순위*',
+    'wins.ranking' : '*최다승 순위*',
+    'less.inning.ranking' : '*최소이닝 순위*',
+    'wins': '승',
+    'winning.rate' : '승률',
+    'losses' : '패',
+    'inning' : '이닝',
+    'less.inning' : '최소이닝',
+    'no.data' : '데이터가 없습니다'
+  },
+  en: {
+    'start.cmd': 'start bulls and cows',
+    'show.ranking.cmd': 'show ranking',
+    'on.goin.msg' : 'Game is on going',
+    'wrong.number' : 'Wrong number (duplicated)',
+    'number.exists' : 'has been tried already',
+    'you.lose' : 'Unfortunately you did not find correct numbers. Correct Number is ',
+    'you.win' : 'is Correct!. Configurations~! You won this game! 🎉🎉🎉 ',
+    'start.msg' : "will lead the game! Let's get started 🙉",
+    'winning.rate.ranking' : '*Winning Rate Raning*',
+    'wins.ranking' : '*Wins Ranking*',
+    'less.inning.ranking' : '*Minimum Innings Ranking*',
+    'wins': 'Wins',
+    'winning.rate' : 'Winning Rate',
+    'losses' : 'Losses',
+    'inning' : 'Inning',
+    'less.inning' : 'Minimum',
+    'no.data' : 'No data' 
+  }
+}
+
 /**
  * Hubot 숫자야구 모듈 - 3 Digit Bulls and Cows Game Module for Hubot
  *
@@ -9,48 +56,59 @@ const _ = require('lodash')
 
 var Baseball = function(args){
 
-  var channel = args.channel
-  var text = args.text
-  var user = args.user_name
-  var send = args.send_handler
-  var bot_name = args.bot_name
-  var redis; /* Use redis for game data if exists, otherwise use fs */
-  var key = 'baseball' + channel
-  var baseball = cache.get(key)
+  var _channel = args.channel
+  var _text = args.text
+  var _user = args.user_name
+  var _send = args.send_handler
+  var _bot_name = args.bot_name
+  var _redis /* Use redis for game data if exists, otherwise use fs */
+  var _key = 'baseball' + _channel
+  var _baseball = cache.get(_key)
   
   if (args.redis_url) {
     var Redis = require('ioredis')
-    redis = new Redis(args.redis_url)
+    _redis = new Redis(args.redis_url)
+  }
+
+  this.supportLocale = function() {
+    return ['en','ko']
   }
 
   // Configurations for Redis and i18n
-  this.config = {
-    redis_key: 'ranking',
-    msg: {
-      'start.cmd': '야구게임 시작',
-      'show.ranking.cmd': '야구게임 순위',
-      'on.goin.msg' : '게임이 진행 중입니다',
-      'wrong.number' : '잘못된 번호에요. 같은 번호가 반복되었네요',
-      'number.exists' : '는 이미 답을 한 번호입니다',
-      'you.lose' : '아쉽게도 게임에 지셨네요 ㅠㅠ 정답 : ',
-      'you.win' : '축하드립니다~ 승리하셨네요! 🎉🎉🎉 정답 ',
-      'start.msg' : '과 함께 하는 숫자야구⚾️ 게임~! 자 시작합니다~! 🙉',
-      'winning.rate.ranking' : '*승률 순위*',
-      'wins.ranking' : '*최다승 순위*',
-      'less.inning.ranking' : '*최소이닝 순위*',
-      'wins': '승',
-      'winning.rate' : '승률',
-      'losses' : '패',
-      'inning' : '이닝',
-      'less.inning' : '최소이닝',
-      'no.data' : '데이터가 없습니다'
-    }
+  var _config = {
+    redis_key: 'ranking', // default
+    locale: 'ko' // default
   }
+
+
+  /* ----- Configurations Setting ----- */
+
+
+  this.setLocale = function(locale) {
+    _config.locale = locale
+  }
+
+  this.setRedisKey = function(key) {
+    _config.redis_key = _key
+  }
+
+  this.addLocalizedMessages = function(locale, messages) {
+    _i18n[locale] = messages
+  }
+
+
+  /* ----- Messages ----- */
+
 
   var msg = function(msg_key) {
-    return this.config.msg[msg_key]
+    return _i18n[_config.locale][msg_key]
   }
 
+  var ordinalStr = function(index) {
+    return _ordinals[_config.locale][index]
+  }
+
+  //
   var generateNumber = function() {
     var r = []
     var n = [0,1,2,3,4,5,6,7,8,9]
@@ -65,41 +123,45 @@ var Baseball = function(args){
     return r.join('')
   }
 
+
+  /* ----- Entry point ----- */
+
+
   this.check = function() {
 
-    if (text.indexOf(msg('show.ranking.cmd')) > -1) {
+    if (_text.indexOf(msg('show.ranking.cmd')) > -1) {
       getRanking(function(err, rank){
-        send(rank)
+        _send(rank)
       });
       return true
     }
     
-    if (text.indexOf(msg('start.cmd')) > -1) {
-      if (baseball) {
-        send(msg('on.goin.msg'))
+    if (_text.indexOf(msg('start.cmd')) > -1) {
+      if (_baseball) {
+        _send(msg('on.goin.msg'))
       } else {
-        this.start()
+        start()
       }
       return true
     }
 
-    if (baseball) {
-      var number = baseball.number
-      var times = baseball.times
-      var a = /[0-9]{3}/.exec(text)
+    if (_baseball) {
+      var number = _baseball.number
+      var times = _baseball.times
+      var a = /[0-9]{3}/.exec(_text)
       if (a) {
         // 답변 유효성 검사 - Validation number
         a = a[0]
         if (a[0] == a[1] || a[1] == a[2] || a[0] == a[2]) {
-          send(`<@${user}> ${msg('wrong.number')}`)
+          _send(`<@${_user}> ${msg('wrong.number')}`)
           return true
         }
 
         // 지난 답변 검사 - Check previous answers
-        var answers = baseball.answers
+        var answers = _baseball.answers
         for (var j in answers) {
           if (answers[j] == a) {
-            send(`<@${user}> ${msg('number.exists')} ${a}`)
+            _send(`<@${_user}> ${msg('number.exists')} ${a}`)
             return true
           }
         }
@@ -120,25 +182,25 @@ var Baseball = function(args){
 
         // 회차 검사 - Check innings
         if (s.length < 3 && times > 7) {
-          this.applyForRank(user, false, (times + 1), function(){})
+          applyForRank(false, (times + 1), function(){})
           this.reset()
-          send(`${msg('you.lose')} ${number}`) 
+          _send(`${msg('you.lose')} ${number}`) 
           return true
         }
 
         // 승리 판정 - Judge win
-        var m = `제 ${times+1} 회 : \`${a}\` - `
+        var m = `${ordinalStr(times)} : \`${a}\` - `
         answers.push(a)
         if (s.length > 2 ) {
-          this.applyForRank(user, true, (times + 1), function(){})
+          applyForRank(true, (times + 1), function(){})
           this.reset()
-          send(`${msg('you.win')} [${number}]`) 
+          _send(`[${number}] ${msg('you.win')}`) 
           return true
         } 
 
         // 숫자 판정 - Decode number
         if (s.length < 1 && b.length < 1) {
-          send(m + 'Out~!')
+          _send(m + 'Out~!')
         } else {
           var r = []
           if (s.length > 0)
@@ -147,9 +209,9 @@ var Baseball = function(args){
           if (b.length > 0)
             r.push(`\`${b.length}B\``)
 
-          send(m + r.join(' '))
+          _send(m + r.join(' '))
         }
-        this.saveGame(baseball)
+        this.saveGame(_baseball)
 
         return true
       } 
@@ -157,23 +219,31 @@ var Baseball = function(args){
     return false
   }
 
+
+  /* ----- Game function ----- */
+
+
   this.saveGame = function(baseball){
     baseball.times++
-    cache.put(key, baseball)
+    cache.put(_key, baseball)
   }
 
-  this.start = function() {
+  var start = function() {
     var answers = []
     var number = generateNumber()
     var times = 0
-    cache.put(key, {number, times, answers})
-    send(`${bot_name}${msg('start.msg')}`)
+    cache.put(_key, {number, times, answers})
+    _send(`${_bot_name}${msg('start.msg')}`)
   }
 
   this.reset = function() {
-    cache.put(key, null)
-    cache.del(key)
+    cache.put(_key, null)
+    cache.del(_key)
   }
+
+
+  /* ---- Rankings ----- */
+  
 
   this.resetRanking = function() {
     writeRank('', function() {})
@@ -201,8 +271,8 @@ var Baseball = function(args){
   }
 
   var readRank = function(callback) {
-    if (redis) {
-      redis.get(this.config.redis_key, function(err, data){
+    if (_redis) {
+      _redis.get(_config.redis_key, function(err, data){
         callback(err, data ? JSON.parse(data) : null)
       });
     } else {
@@ -211,8 +281,8 @@ var Baseball = function(args){
   }
 
   var writeRank = function(data, callback) {
-    if (redis) {
-      redis.set(this.config.redis_key, JSON.stringify(data));
+    if (_redis) {
+      _redis.set(_config.redis_key, JSON.stringify(data));
       callback(null)
     } else {
       writeFile(data, callback)
@@ -220,16 +290,16 @@ var Baseball = function(args){
   }
 
 
-  this.applyForRank = function(user, isWin, times, callback) {
+  var applyForRank = function(isWin, times, callback) {
 
     readRank(function(err, data){
 
       var data = data ? data : []
 
-      var index = _.findIndex(data, function(o) { return o.user == user })
+      var index = _.findIndex(data, function(o) { return o.user == _user })
 
       var user_data = index > -1 ? data[index] 
-                      : { user: user, times: 0, wins: 0, loses: 0, min_times: 9999 }
+                      : { user: _user, times: 0, wins: 0, loses: 0, min_times: 9999 }
 
       user_data.times += times
       user_data.wins += isWin ? 1 : 0
@@ -316,7 +386,7 @@ var Baseball = function(args){
             return a.min_times == b.min_times ? 0 : (a.min_times > b.min_times ? 1 : 0)
           })
 
-          // 최소이닝 순위 - mininum innings ranking
+          // 최소이닝 순위 - minimum innings ranking
           result = result.concat('\n')
           result = result.concat(`${msg('less.inning.ranking')} \n`)
           for (var j = 0; j < data.length ; j++) {
