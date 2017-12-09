@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/devnoff/hubot-baseball.git"
+    "url": "git+https://github.com/devnoff/hubot-baseball-game.git"
   },
   "author": "Robinson Park",
   "license": "MIT",

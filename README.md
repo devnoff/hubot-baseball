@@ -3,6 +3,10 @@
 휴봇 숫자야구 게임 모듈입니다
 
 
+**Install throw NPM**
+- `npm install hubot-baseball-game --save`
+
+
 **지원 언어 Supporting Languages**
 
 - 한국어
