@@ -3,7 +3,7 @@
 휴봇 숫자야구 게임 모듈입니다
 
 
-**Install throw NPM**
+**Install through NPM**
 - `npm install hubot-baseball-game --save`
 
 
