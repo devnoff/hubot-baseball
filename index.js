@@ -1,10 +1,18 @@
+
+/**
+ * Hubot 숫자야구 모듈 - 3 Digit Bulls and Cows Game Module for Hubot
+ *
+ * Created by Robinson Park 2017.11.30. 
+ */
+
+
 const cache = require('memory-cache')
 const _ = require('lodash')
 
 
 const _ordinals = {
-  ko: ['1회','2회','3회','4회','5회','6회,','7회,','8회,','9회'],
-  en: ['1st','2nd','3rd','4th','5th','6th,','7th,','8th,','9th'],
+  ko: ['1회','2회','3회','4회','5회','6회','7회','8회,','9회'],
+  en: ['1st','2nd','3rd','4th','5th','6th','7th','8th,','9th'],
 }
 
 const _i18n = {
@@ -48,11 +56,6 @@ const _i18n = {
   }
 }
 
-/**
- * Hubot 숫자야구 모듈 - 3 Digit Bulls and Cows Game Module for Hubot
- *
- * Created by Robinson Park 2017.11.30. 
- */
 
 var Baseball = function(args){
 
@@ -88,12 +91,22 @@ var Baseball = function(args){
     _config.locale = locale
   }
 
-  this.setRedisKey = function(key) {
-    _config.redis_key = _key
+  // Redis key for storing Ranking
+  this.setRedisKey = function(redis_key) {
+    _config.redis_key = redis_key
   }
 
+  // Supports adding additional localized messages
   this.addLocalizedMessages = function(locale, messages) {
     _i18n[locale] = messages
+  }
+
+  this.getLocalizedMessages = function(locale) {
+
+    if (locale)
+      return _i18n[locale]
+
+    return _i18n
   }
 
 
@@ -211,7 +224,7 @@ var Baseball = function(args){
 
           _send(m + r.join(' '))
         }
-        this.saveGame(_baseball)
+        saveGame(_baseball)
 
         return true
       } 
@@ -223,7 +236,7 @@ var Baseball = function(args){
   /* ----- Game function ----- */
 
 
-  this.saveGame = function(baseball){
+  var saveGame = function(baseball){
     baseball.times++
     cache.put(_key, baseball)
   }
@@ -320,32 +333,6 @@ var Baseball = function(args){
         callback(err, data)
       })
 
-    })
-  }
-
-  var getWinningRateRank = function(callback) {
-    readRank(function(err, data){
-      if (data) {
-          data.sort(function(a, b){
-            var aRate = a.wins / a.times
-            var bRate = b.wins / b.times
-            return aRate == bRate ? 0 : aRate > bRate ? 0 : 1
-          })
-      }
-
-      callback(err, data)
-    })
-  }
-
-  var getWinningsRank = function(callback) {
-    readRank(function(err, data){
-      if (data) {
-        data.sort(function(a, b){
-          return a.wins == b.wins ? 0 : (a.wins > b.wins ? 0 : 1)
-        })
-      }
-
-      callback(err, data)
     })
   }
 

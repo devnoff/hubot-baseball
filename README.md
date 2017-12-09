@@ -3,16 +3,26 @@
 휴봇 숫자야구 게임 모듈입니다
 
 
-**명령어**
+**지원 언어 Supporting Languages**
 
-- 게임시작: '야구게임 시작'
-- 순위보기: '야구게임 순위'
+- 한국어 Korean
+- 영어 English
 
 
-**작동방법**
+**명령어 Default Commands**
 
-- 슬랙 채널에서 '야구게임 시작'을 치면 게임이 시작됩니다.
-- 3개의 연속된 숫자를 입력하면 회차가 카운팅되고 결과가 보여집니다
+`setLocalizedMessages` 함수를 통해 커스터마이징 가능합니다. 게임시작 명령의 키는 `start.cmd` 이고, 순위보기 명령의 키는 'show.ranking.cmd' 입니다. 
+Able to customize commands with function `setLocalizedMessages` The key for starting game is `start.cmd` and `show.ranking.com` is for showing rankings.
+
+- 게임시작 Start Game: '야구게임 시작', 'start bulls and cows' 
+- 순위보기 Show Ranking: '야구게임 순위', 'show ranking'
+
+
+**작동방법 How to play**
+
+- 3자리의 숨겨진 숫자를 찾는 게임입니다. 
+- 슬랙 채널에서 '야구게임 시작'을 치면 게임이 시작됩니다. 
+- 3개의 연속된 숫자를 입력하면 회차가 카운팅되고 결과가 보여집니다. 
 > ex) 
 > 사용자입력:
 > 123
@@ -21,6 +31,19 @@
 > 1회 [123] - 1S 1B
 
 - 총 9회까지 진행됩니다
+
+
+- This game is find 3 digit numbers which is hidden and genrated by bot. It would be started if you type 'start bulls and cows'. And if you input 3 different digit numbers, it returns result of the input. 
+- If there is a number you input in the hidden numbers and also it matches the position, it returns S. And If the number is only exist and not matching position, it returns B. 
+- You will have 9 chances to find correct number in a game.
+
+> ex) 
+> User input:
+> 123
+>
+> Bot answer:
+> 1st `123` - `1S` `1B`
+
 
 
 v1.6.0
